@@ -1,0 +1,22 @@
+[project]
+name = "jevsweeper"
+version = "0.1.0"
+description = "Play Windows XP Minesweeper by asking TypeSafe Jev which square to click."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typesafe-sdk",
+    "pillow",
+    "pywin32",
+    "python-dotenv",
+]
+
+[project.scripts]
+jevsweeper = "jevsweeper.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
