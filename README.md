@@ -2,7 +2,7 @@
 
 Play Windows XP Minesweeper by sending the live board to [TypeSafe Jev](https://docs.typesafe.ai/introduction) and clicking the safest square.
 
-Jev is a System One model: you pass a `state` and typed questions, and you get probabilities back. This bot does **not** ask Jev to “solve Minesweeper.” It asks one yes/no (Noul) per frontier cell — “is this hidden cell safe to click?” — then your code picks the highest score and left-clicks that tile.
+Jev is a System One model: you pass a `state` and typed questions, and you get probabilities back. Code first flags or clicks cells that Minesweeper numbers already force (100% mine or 100% safe). Remaining frontier cells get two Nouls each — “safe to left-click?” and “is this a mine?” — then the bot left-clicks safes and right-clicks flags. Uncertain cells are flagged rather than clicked if the mine score is higher.
 
 ## Setup
 
@@ -48,15 +48,15 @@ python -m jevsweeper --once
 ```python
 from typesafe_sdk import TypeSafeClient
 from jevsweeper.board import Board
-from jevsweeper.jev_move import next_click
+from jevsweeper.jev_move import next_move
 
 board = Board.from_text(
     ".....\n.111.\n.1 1.\n.111.\n.....",
     mines=10,
 )
 with TypeSafeClient() as client:
-    move = next_click(board, client=client)
-print(move.row, move.col, move.noul)
+    move = next_move(board, client=client)
+print(move.action, move.row, move.col, move.noul)
 ```
 
 Opening boards (nothing revealed yet) click the center tile in code and skip Jev.

@@ -47,4 +47,4 @@ def hover_move(layout: Layout, move: Move) -> None:
 
 def click_move(layout: Layout, move: Move) -> None:
     x, y = tile_center(layout, move.row, move.col)
-    click_client(layout.hwnd, x, y)
+    click_client(layout.hwnd, x, y, right=move.action == "flag")

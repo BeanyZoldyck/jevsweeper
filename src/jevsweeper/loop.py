@@ -7,7 +7,7 @@ from pathlib import Path
 from typesafe_sdk import TypeSafeClient
 
 from jevsweeper.clicker import click_move, hover_move
-from jevsweeper.jev_move import Move, next_click
+from jevsweeper.jev_move import Move, format_move, next_move
 from jevsweeper.vision import WindowNotFoundError, find_minesweeper, read_board, wait_for_window
 
 DEFAULT_EXE = Path(r"C:/Users/chuka/Documents/Minesweeper-Windows-XP/WINMINE.EXE")
@@ -54,8 +54,8 @@ def play(
             else:
                 stuck = 0
             last_text = board.to_text()
-            move = next_click(board, mines=board.mines, client=client)
-            print(f"click r{move.row} c{move.col} noul={move.noul:.3f} ({move.reason})")
+            move = next_move(board, mines=board.mines, client=client)
+            print(format_move(move))
             click_move(layout, move)
             time.sleep(delay)
         return "max_moves"
@@ -68,8 +68,8 @@ def once(exe: Path = DEFAULT_EXE, *, mines: int | None = None, click: bool = Fal
     hwnd = attach_or_launch(exe)
     board, layout = read_board(hwnd, mines=mines)
     print(board.to_text())
-    move = next_click(board, mines=board.mines)
-    print(f"next r{move.row} c{move.col} noul={move.noul:.3f} ({move.reason})")
+    move = next_move(board, mines=board.mines)
+    print(format_move(move))
     hover_move(layout, move)
     if click:
         click_move(layout, move)

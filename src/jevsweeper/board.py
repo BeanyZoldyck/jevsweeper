@@ -90,6 +90,46 @@ class Board:
             return frontier
         return self.hidden_cells()
 
+    def deduce(self) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
+        """Forced mines and safes from each number's remaining-neighbor count."""
+        flags = {
+            (row, col)
+            for row in range(self.rows)
+            for col in range(self.cols)
+            if self.grid[row][col] == FLAG
+        }
+        hidden = set(self.hidden_cells())
+        safes: set[tuple[int, int]] = set()
+        progress = True
+        while progress:
+            progress = False
+            for row in range(self.rows):
+                for col in range(self.cols):
+                    cell = self.grid[row][col]
+                    if cell not in "12345678":
+                        continue
+                    needed = int(cell)
+                    neighbors = self.neighbors(row, col)
+                    flag_count = sum(1 for pos in neighbors if pos in flags)
+                    unknown = [pos for pos in neighbors if pos in hidden and pos not in flags and pos not in safes]
+                    remaining = needed - flag_count
+                    if remaining < 0 or remaining > len(unknown):
+                        continue
+                    if remaining == 0 and unknown:
+                        safes.update(unknown)
+                        progress = True
+                    elif remaining == len(unknown) and unknown:
+                        flags.update(unknown)
+                        hidden.difference_update(unknown)
+                        progress = True
+        already_flagged = {
+            (row, col)
+            for row in range(self.rows)
+            for col in range(self.cols)
+            if self.grid[row][col] == FLAG
+        }
+        return flags - already_flagged, safes
+
     def to_text(self) -> str:
         return "\n".join("".join(row) for row in self.grid)
 
