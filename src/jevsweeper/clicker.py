@@ -33,6 +33,18 @@ def click_client(hwnd: int, x: int, y: int, *, right: bool = False) -> None:
     win32gui.SendMessage(hwnd, up, 0, lparam)
 
 
+def hover_client(hwnd: int, x: int, y: int) -> None:
+    win32api, _, win32gui = _win32()
+    restore_window(hwnd)
+    screen_x, screen_y = win32gui.ClientToScreen(hwnd, (x, y))
+    win32api.SetCursorPos((screen_x, screen_y))
+
+
+def hover_move(layout: Layout, move: Move) -> None:
+    x, y = tile_center(layout, move.row, move.col)
+    hover_client(layout.hwnd, x, y)
+
+
 def click_move(layout: Layout, move: Move) -> None:
     x, y = tile_center(layout, move.row, move.col)
     click_client(layout.hwnd, x, y)

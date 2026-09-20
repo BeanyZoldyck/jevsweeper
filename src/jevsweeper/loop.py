@@ -6,7 +6,7 @@ from pathlib import Path
 
 from typesafe_sdk import TypeSafeClient
 
-from jevsweeper.clicker import click_move
+from jevsweeper.clicker import click_move, hover_move
 from jevsweeper.jev_move import Move, next_click
 from jevsweeper.vision import WindowNotFoundError, find_minesweeper, read_board, wait_for_window
 
@@ -70,6 +70,7 @@ def once(exe: Path = DEFAULT_EXE, *, mines: int | None = None, click: bool = Fal
     print(board.to_text())
     move = next_click(board, mines=board.mines)
     print(f"next r{move.row} c{move.col} noul={move.noul:.3f} ({move.reason})")
+    hover_move(layout, move)
     if click:
         click_move(layout, move)
     return move

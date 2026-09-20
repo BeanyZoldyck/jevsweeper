@@ -37,7 +37,7 @@ python -m jevsweeper
 python -m jevsweeper --exe "C:\Users\chuka\Documents\GitHub\ofdl\Minesweeper-Windows-XP\WINMINE.EXE"
 ```
 
-Print the next square from the current window without clicking:
+Print the next square from the current window and move the mouse there without clicking:
 
 ```powershell
 python -m jevsweeper --once

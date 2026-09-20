@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument(
         "--once",
         action="store_true",
-        help="Read the current board, print the next square, and exit without clicking",
+        help="Read the current board, move the mouse to the next square, and exit without clicking",
     )
     parser.add_argument("--mines", type=int, default=None, help="Mine count (inferred from size if omitted)")
     parser.add_argument("--delay", type=float, default=0.2, help="Seconds to wait after each click")
