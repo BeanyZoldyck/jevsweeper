@@ -1,7 +1,7 @@
 [project]
 name = "jevsweeper"
 version = "0.1.0"
-description = "Play Windows XP Minesweeper by asking TypeSafe Jev which square to click."
+description = "Play Windows XP Minesweeper by asking a local-jev server which square to click."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

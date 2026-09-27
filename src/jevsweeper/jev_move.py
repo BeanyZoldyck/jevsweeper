@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typesafe_sdk import Noul, TypeSafeClient
 
 from jevsweeper.board import Board
+from jevsweeper.client import make_client
 
 GAME_RULES = (
     "Minesweeper. A digit is the count of mines in the 8 adjacent cells. "
@@ -140,7 +141,7 @@ def next_move(board: Board, mines: int | None = None, *, client: TypeSafeClient 
 
     owns_client = client is None
     if client is None:
-        client = TypeSafeClient()
+        client = make_client()
     try:
         response = client.system_one(state=state, questions=questions)
     finally:

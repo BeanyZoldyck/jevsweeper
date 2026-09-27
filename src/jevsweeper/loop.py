@@ -7,6 +7,7 @@ from pathlib import Path
 from typesafe_sdk import TypeSafeClient
 
 from jevsweeper.clicker import click_move, hover_move
+from jevsweeper.client import make_client
 from jevsweeper.jev_move import Move, format_move, next_move
 from jevsweeper.vision import WindowNotFoundError, find_minesweeper, read_board, wait_for_window
 
@@ -30,11 +31,13 @@ def play(
     delay: float = 0.2,
     max_moves: int = 500,
     client: TypeSafeClient | None = None,
+    base_url: str | None = None,
+    model: str | None = None,
 ) -> str:
     hwnd = attach_or_launch(exe)
     owns_client = client is None
     if client is None:
-        client = TypeSafeClient()
+        client = make_client(base_url=base_url, model=model)
     last_text = ""
     stuck = 0
     status = "playing"
@@ -64,11 +67,26 @@ def play(
             client.close()
 
 
-def once(exe: Path = DEFAULT_EXE, *, mines: int | None = None, click: bool = False) -> Move:
+def once(
+    exe: Path = DEFAULT_EXE,
+    *,
+    mines: int | None = None,
+    click: bool = False,
+    client: TypeSafeClient | None = None,
+    base_url: str | None = None,
+    model: str | None = None,
+) -> Move:
     hwnd = attach_or_launch(exe)
     board, layout = read_board(hwnd, mines=mines)
     print(board.to_text())
-    move = next_move(board, mines=board.mines)
+    owns_client = client is None
+    if client is None:
+        client = make_client(base_url=base_url, model=model)
+    try:
+        move = next_move(board, mines=board.mines, client=client)
+    finally:
+        if owns_client:
+            client.close()
     print(format_move(move))
     hover_move(layout, move)
     if click:
