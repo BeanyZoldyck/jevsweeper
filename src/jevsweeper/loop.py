@@ -7,11 +7,25 @@ from pathlib import Path
 from typesafe_sdk import TypeSafeClient
 
 from jevsweeper.clicker import click_move, hover_move
-from jevsweeper.client import make_client
+from jevsweeper.client import make_client, resolve_target
 from jevsweeper.jev_move import Move, format_move, next_move
 from jevsweeper.vision import WindowNotFoundError, find_minesweeper, read_board, wait_for_window
 
 DEFAULT_EXE = Path(r"C:/Users/chuka/Documents/Minesweeper-Windows-XP/WINMINE.EXE")
+
+
+def _client(
+    client: TypeSafeClient | None,
+    *,
+    backend: str | None,
+    base_url: str | None,
+    model: str | None,
+) -> tuple[TypeSafeClient, bool]:
+    if client is not None:
+        return client, False
+    target = resolve_target(backend=backend, base_url=base_url)
+    print(f"backend={target.backend} url={target.base_url}")
+    return make_client(backend=backend, base_url=base_url, model=model), True
 
 
 def attach_or_launch(exe: Path, timeout: float = 10.0) -> int:
@@ -31,13 +45,12 @@ def play(
     delay: float = 0.2,
     max_moves: int = 500,
     client: TypeSafeClient | None = None,
+    backend: str | None = None,
     base_url: str | None = None,
     model: str | None = None,
 ) -> str:
     hwnd = attach_or_launch(exe)
-    owns_client = client is None
-    if client is None:
-        client = make_client(base_url=base_url, model=model)
+    client, owns_client = _client(client, backend=backend, base_url=base_url, model=model)
     last_text = ""
     stuck = 0
     status = "playing"
@@ -73,15 +86,14 @@ def once(
     mines: int | None = None,
     click: bool = False,
     client: TypeSafeClient | None = None,
+    backend: str | None = None,
     base_url: str | None = None,
     model: str | None = None,
 ) -> Move:
     hwnd = attach_or_launch(exe)
     board, layout = read_board(hwnd, mines=mines)
     print(board.to_text())
-    owns_client = client is None
-    if client is None:
-        client = make_client(base_url=base_url, model=model)
+    client, owns_client = _client(client, backend=backend, base_url=base_url, model=model)
     try:
         move = next_move(board, mines=board.mines, client=client)
     finally:

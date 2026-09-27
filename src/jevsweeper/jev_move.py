@@ -89,7 +89,15 @@ def _pick_jev_move(candidates: list[tuple[int, int]], response) -> Move:
     )
 
 
-def next_move(board: Board, mines: int | None = None, *, client: TypeSafeClient | None = None) -> Move:
+def next_move(
+    board: Board,
+    mines: int | None = None,
+    *,
+    client: TypeSafeClient | None = None,
+    backend: str | None = None,
+    base_url: str | None = None,
+    model: str | None = None,
+) -> Move:
     """Return the next square to click or flag from a board state."""
     mine_count = mines if mines is not None else board.mines
     if board.status() != "playing":
@@ -141,7 +149,7 @@ def next_move(board: Board, mines: int | None = None, *, client: TypeSafeClient 
 
     owns_client = client is None
     if client is None:
-        client = make_client()
+        client = make_client(backend=backend, base_url=base_url, model=model)
     try:
         response = client.system_one(state=state, questions=questions)
     finally:
@@ -151,8 +159,16 @@ def next_move(board: Board, mines: int | None = None, *, client: TypeSafeClient 
     return _pick_jev_move(candidates, response)
 
 
-def next_click(board: Board, mines: int | None = None, *, client: TypeSafeClient | None = None) -> Move:
-    return next_move(board, mines, client=client)
+def next_click(
+    board: Board,
+    mines: int | None = None,
+    *,
+    client: TypeSafeClient | None = None,
+    backend: str | None = None,
+    base_url: str | None = None,
+    model: str | None = None,
+) -> Move:
+    return next_move(board, mines, client=client, backend=backend, base_url=base_url, model=model)
 
 
 def format_move(move: Move) -> str:
